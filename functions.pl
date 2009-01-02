@@ -1,3 +1,11 @@
+############################################################
+# 	- DDBot v0.1a -
+# Written by:
+# 	EverlastingFire 
+# 		(everlastingfire@autistici.org)
+# functions.pl
+############################################################
+
 # - InitVars(configfile) - Initialize variables from configuration file
 sub InitVars(){
 	print("[*] Initializing vars...\n");
