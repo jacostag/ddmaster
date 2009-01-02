@@ -7,7 +7,7 @@
 ############################################################
 
 # - InitVars(configfile) - Initialize variables from configuration file
-sub InitVars(){
+sub InitVars {
 	print("[*] Initializing vars...\n");
 	my $Config = shift();
 	open(ConfigFile, "<$Config");
@@ -27,7 +27,7 @@ sub InitVars(){
 }
 
 # - Config(configfile) - First-run configuration
-sub Config(){
+sub Config {
 	print("[*] Starting DDBot configuration... \n");
 	my $Config = shift();
 	print("		-- DDBot configuration --\n");
