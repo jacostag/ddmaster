@@ -3,7 +3,7 @@
 # Written by:
 # 	EverlastingFire 
 # 		(everlastingfire@autistici.org)
-# functions.pl
+# functions.pm
 ############################################################
 
 # - InitVars(configfile) - Initialize variables from configuration file
@@ -53,17 +53,21 @@ sub Config(){
 }
 
 # - SendMsg(type, message, <recipient>) - Send a message. 
-# The first parameter is the type of message (chan or query), 
+# The first parameter is the type of message (query or notice), 
 # the second is the message. If the type is "query", there's a third parameter
 # to specify, the recipient.
 sub SendMsg {
 	my $MsgType = shift();
-	if($MsgType eq "chan"){
-		my $Msg = shift();
-		print $Core::IRCHandler "PRIVMSG $Core::Chan :$Msg\n";
-	} elsif ($MsgType eq "query"){
-		my ($Msg, $To) = @_;
+	my ($Msg, $To) = @_;
+	if($MsgType eq "query"){
     	print $Core::IRCHandler "PRIVMSG $To :$Msg\n";
 	}
 }
+
+sub RegisterKey {
+	my ($Keyword, $Function) = @_;
+	$Core::Functions{"$Keyword"} = "$Function";
+	print("    - Keyword $Keyword registered.\n");
+}
+
 1;

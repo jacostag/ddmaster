@@ -8,8 +8,7 @@
 
 use strict;
 use IO::Socket;
-require "functions.pl";
-%Core::Functions = ('aaa' => 'prova');
+require "functions.pm";
 # Local vars, only for init
 my $ModList = "modlist";
 my $Config = "config";
@@ -25,6 +24,7 @@ while(my $ModName = <ModFile>){
 	if(!(-e "modules/$ModName")){
 		print("Not found.\n");
 	} else {
+		print("\n");
 		eval{ require "modules/$ModName" };
 		if($@){ # Error handling - if a module can't be loaded skip it and push the error in @Errors
 			print("Errors. Skipping...\n");
@@ -86,12 +86,13 @@ while(1){
 }
 # - ParseLine() - Search in %functions if there's a index matching the line
 sub ParseLine(){
-	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg, $State) = @_;
+	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
+	chop($Msg);
 	while(my ($Index, $Value) = each(%Core::Functions)){
-		#syswrite STDOUT, ("Index check: $Index\n");
+		syswrite STDOUT, ("Index check: $Index\n");
 		if($Msg =~ m/$Index/){
 			if(my $FuncRef = __PACKAGE__->can($Value)){
-				$FuncRef->();
+				$FuncRef->($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg);
 			} else {
 				warn("Warning: $Value is not defined.\n");
 			}
