@@ -20,9 +20,11 @@ sub InitVars {
 	$Core::Nickname = $ConfArray[2];
 	$Core::Ident = $ConfArray[3];
 	$Core::Realname = $ConfArray[4];
-	print("  - Server: $Core::Server\n  - Chan: $Core::Chan\n");
-	print("  - Nickname = $Core::Nickname\n  - Ident: $Core::Ident\n");
-	print("  - Realname = $Core::Realname\n");
+	if($Core::Debug){
+		print("  - Server: $Core::Server\n  - Chan: $Core::Chan\n");
+		print("  - Nickname = $Core::Nickname\n  - Ident: $Core::Ident\n");
+		print("  - Realname = $Core::Realname\n");
+	}
 	print("Initialization complete. Starting bot...\n");
 }
 
@@ -60,14 +62,15 @@ sub SendMsg {
 	my $MsgType = shift();
 	my ($Msg, $To) = @_;
 	if($MsgType eq "query"){
-		print $Core::IRCHandler "PRIVMSG $To :$Msg\n";
+		syswrite(STDOUT, "Query to $To: $Msg\n") if($Core::Debug);
+		print($Core::IRCHandler "PRIVMSG $To :$Msg\n");
 	}
 }
 
 sub RegisterKey {
 	my ($Keyword, $Function) = @_;
 	$Core::Functions{"$Keyword"} = "$Function";
-	print("    - Keyword $Keyword registered.\n");
+	print("    - Keyword $Keyword registered.\n") if($Core::Debug);
 }
 
 1;

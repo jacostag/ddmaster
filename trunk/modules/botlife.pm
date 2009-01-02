@@ -30,4 +30,4 @@ sub BotLife_Quit {
 	}
 }
 
-1;
+0;
