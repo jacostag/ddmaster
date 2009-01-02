@@ -1,18 +1,20 @@
 ############################################################
-# 	- DDBot Core v0.1a -
+# 	- DDBot v0.1a -
 # Written by:
 # 	EverlastingFire 
 # 		(everlastingfire@autistici.org)
-#
+# core.pl
 ############################################################
 
 use strict;
 use IO::Socket;
 require "functions.pl";
-
+%Core::Functions = ('aaa' => 'prova');
 # Local vars, only for init
 my $ModList = "modlist";
 my $Config = "config";
+my $ErrLog = "error.log";
+my @Errors;
 
 # Module loader
 print("[*] Loading modules...\n");
@@ -22,11 +24,26 @@ while(my $ModName = <ModFile>){
 	print("  - \"$ModName\"... ");
 	if(!(-e "modules/$ModName")){
 		print("Not found.\n");
-	} else { # TODO: Real module loading. (maybe eval+warn for error handling)
-		print("Loaded.\n");
+	} else {
+		eval{ require "modules/$ModName" };
+		if($@){ # Error handling - if a module can't be loaded skip it and push the error in @Errors
+			print("Errors. Skipping...\n");
+			push(@Errors, "- Module: $ModName -\n---------------------------\n");
+			push(@Errors, $@);
+			push(@Errors, "---------------------------\n");
+		} else {
+			print("Loaded.\n");
+		}
 	}
 }
 close(ModFile);
+
+# Write the error log
+open(ErrFile, ">$ErrLog");
+foreach my $ErrLine (@Errors){
+	print ErrFile $ErrLine . "\n";
+}
+close(ErrFile);
 
 print("[*] Loading complete.\n");
 
@@ -63,7 +80,21 @@ while(1){
     	    my $MsgHost   = $3;
     	    my $MsgTarget = $4;
     	    my $Msg       = $5;
-    	    #parse($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg, $State);
+    	    ParseLine($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg);
     	}
+	}
+}
+# - ParseLine() - Search in %functions if there's a index matching the line
+sub ParseLine(){
+	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg, $State) = @_;
+	while(my ($Index, $Value) = each(%Core::Functions)){
+		#syswrite STDOUT, ("Index check: $Index\n");
+		if($Msg =~ m/$Index/){
+			# We need to disable temporarily strict to make this work...
+			# Maybe it's better to use only strict 'vars' ?
+			no strict;
+			#syswrite STDOUT, ("Found index. Calling $Value...\n");
+			$Value->();
+		}
 	}
 }
