@@ -9,7 +9,8 @@
 use strict;
 use IO::Socket;
 require "functions.pm";
-# Local vars, only for init
+
+# Local vars
 my $ModList = "modlist";
 my $Config = "config";
 my $ErrLog = "error.log";
@@ -17,7 +18,7 @@ my @Errors;
 
 # Module loader
 print("[*] Loading modules...\n");
-open(ModFile, "<$ModList");
+open(ModFile, "<$ModList") or warn "  [*] Warning: $ModList not found!\n";
 while(my $ModName = <ModFile>){
 	chomp($ModName);
 	print("  - \"$ModName\"... ");
@@ -39,7 +40,7 @@ while(my $ModName = <ModFile>){
 close(ModFile);
 
 # Write the error log
-open(ErrFile, ">$ErrLog");
+open(ErrFile, ">$ErrLog") or warn "  [*] Warning: $ErrLog not found!\n" ;
 foreach my $ErrLine (@Errors){
 	print ErrFile $ErrLine . "\n";
 }
@@ -75,21 +76,20 @@ while(1){
 		my $IRCState = 1;
 		if($Core::CurrentLine =~ m/^PING \:(.*)/ ) { print $Core::IRCHandler "PONG :$1"; }
 		if($Core::CurrentLine =~ m/^\:(.+?)\!(.+?)\@(.+?) PRIVMSG (.+?) \:(.+)/ ) {
-    	    my $MsgNick   = $1;
-    	    my $MsgIdent  = $2;
-    	    my $MsgHost   = $3;
-    	    my $MsgTarget = $4;
-    	    my $Msg       = $5;
-    	    ParseLine($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg);
-    	}
+			my $MsgNick   = $1;
+			my $MsgIdent  = $2;
+			my $MsgHost   = $3;
+			my $MsgTarget = $4;
+			my $Msg       = $5;
+			ParseLine($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg);
+		}
 	}
 }
 # - ParseLine() - Search in %functions if there's a index matching the line
-sub ParseLine(){
+sub ParseLine {
 	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
 	chop($Msg);
 	while(my ($Index, $Value) = each(%Core::Functions)){
-		syswrite STDOUT, ("Index check: $Index\n");
 		if($Msg =~ m/$Index/){
 			if(my $FuncRef = __PACKAGE__->can($Value)){
 				$FuncRef->($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg);
