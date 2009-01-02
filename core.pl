@@ -90,11 +90,11 @@ sub ParseLine(){
 	while(my ($Index, $Value) = each(%Core::Functions)){
 		#syswrite STDOUT, ("Index check: $Index\n");
 		if($Msg =~ m/$Index/){
-			# We need to disable temporarily strict to make this work...
-			# Maybe it's better to use only strict 'vars' ?
-			no strict;
-			#syswrite STDOUT, ("Found index. Calling $Value...\n");
-			$Value->();
+			if(my $FuncRef = __PACKAGE__->can($Value)){
+				$FuncRef->();
+			} else {
+				warn("Warning: $Value is not defined.\n");
+			}
 		}
 	}
 }
