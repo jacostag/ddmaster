@@ -60,7 +60,7 @@ sub SendMsg {
 	my $MsgType = shift();
 	my ($Msg, $To) = @_;
 	if($MsgType eq "query"){
-    	print $Core::IRCHandler "PRIVMSG $To :$Msg\n";
+		print $Core::IRCHandler "PRIVMSG $To :$Msg\n";
 	}
 }
 

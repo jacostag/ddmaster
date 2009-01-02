@@ -11,16 +11,15 @@ sub BotLife_Login {
 	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
 	if($Msg =~ m/^\!login (.+)/){
 		if($1 eq $AdminPass){
-            if(grep{ $_ eq $MsgNick } @Admins){
-                SendMsg("query", "You're already logged in!\n", $MsgNick);
-            }
-            else{
-                push(@Admins, $MsgNick);
-                SendMsg("query", "Okay, you're logged in. Have fun!\n", $MsgNick);
-            }
-        } else {
-        	SendMsg("query", "Wrong password. Retry. :)\n", $MsgNick);
-       	}
+			if(grep{ $_ eq $MsgNick } @Admins){
+				SendMsg("query", "You're already logged in!\n", $MsgNick);
+			} else{
+				push(@Admins, $MsgNick);
+				SendMsg("query", "Okay, you're logged in. Have fun!\n", $MsgNick);
+			}
+		} else {
+			SendMsg("query", "Wrong password. Retry. :)\n", $MsgNick);
+		}
 	}
 }
 sub BotLife_Quit {
