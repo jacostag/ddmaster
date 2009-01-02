@@ -10,12 +10,18 @@ use strict;
 use IO::Socket;
 require "functions.pm";
 
+# Enable debugging - 1 is enabled, 0 is disabled
+$Core::Debug = 0;
+
 # Local vars
 my $ModList = "modlist";
 my $Config = "config";
 my $ErrLog = "error.log";
 my @Errors;
 
+# Bot start
+print("     - DDMaster IRC Bot -\n");
+print("Debug mode: ", ($Core::Debug) ? "yes\n" : "no\n");
 # Module loader
 print("[*] Loading modules...\n");
 open(ModFile, "<$ModList") or warn "  [*] Warning: $ModList not found!\n";
@@ -25,7 +31,6 @@ while(my $ModName = <ModFile>){
 	if(!(-e "modules/$ModName")){
 		print("Not found.\n");
 	} else {
-		print("\n");
 		eval{ require "modules/$ModName" };
 		if($@){ # Error handling - if a module can't be loaded skip it and push the error in @Errors
 			print("Errors. Skipping...\n");
