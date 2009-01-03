@@ -1,20 +1,36 @@
-# Admin password - Maybe it's better stored in core.pl, temporarily here
-$AdminPass = "test";
-@Admins;
+############################################################
+# 	- BotLife.pm v0.1a -
+# Written by:
+# 	EverlastingFire 
+# 		(everlastingfire@autistici.org)
+############################################################
 
-RegisterKey("login", "BotLife_Login");
-#RegisterKey("logout", "BotLife_Logout");
-#RegisterKey("adminlist", "BotLife_AdminList");
+# NOTE: This module is strongly commented to explain how to create other modules for the bot.
+# Most of the functions are explained better in functions.pm, anyway. ;)
+
+# Keywords registering for the core...
+# If the core find a keyword registered, it calls the relative function.
+# Each function should be prefixed with ModuleName_ 
+# in order to avoid conflicts with other modules
+
+RegisterKey("admlogin", "BotLife_AdmLogin");
+RegisterKey("admlogout", "BotLife_AdmLogout");
+RegisterKey("admlist", "BotLife_AdminList");
 RegisterKey("quit", "BotLife_Quit");
 
-sub BotLife_Login {
+sub BotLife_AdmLogin {
+	# The core provides these variables to each function.
 	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
+	# You MUST re-check $Msg, because the core only search for the keywords 
+	# and doesn't send parameters to the module
 	if($Msg =~ m/^\!login (.+)/){
-		if($1 eq $AdminPass){
-			if(grep{ $_ eq $MsgNick } @Admins){
+		if($1 eq $Core::AdminPass){
+			# If you need to check if a user is admin, you can use IsAdmin($Nickname)
+			# IsAdmin() returns 1 if yes, 0 if not.
+			if(IsAdmin($MsgNick)){
 				SendMsg("query", "You're already logged in!\n", $MsgNick);
 			} else{
-				push(@Admins, $MsgNick);
+				push(@Core::Admins, $MsgNick);
 				SendMsg("query", "Okay, you're logged in. Have fun!\n", $MsgNick);
 			}
 		} else {
@@ -22,12 +38,43 @@ sub BotLife_Login {
 		}
 	}
 }
-sub BotLife_Quit {
+
+sub BotLife_AdmLogout {
 	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
-	if($Msg =~ /^\!quit/){
-		print $Core::IRCHandler "QUIT\n";
-		exit(0);
+	my @AdminsTmp;
+	if($Msg =~ m/^\!logout/){
+		if(IsAdmin($MsgNick)){
+			for($i = 0; $i < scalar(@Core::Admins); $i++){
+				if($Core::Admins[$i] ne $MsgNick){
+					$AdminsTmp[$i] = $Core::Admins[$i];
+				}
+			}
+			@Core::Admins = @AdminsTmp;
+			shift(@Core::Admins);
+			SendMsg("query", "Okay, you're logged out. See ya!", $MsgNick);
+		}
+		else {
+			SendMsg("query", "But... you aren't logged in! o.o", $MsgNick);
+		}
 	}
 }
 
-0;
+sub BotLife_AdminList {
+	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
+	if($Msg =~ m/^\!adminlist/){
+		my $List = join(", ", @Core::Admins);
+		SendMsg("query", $List, $MsgNick);
+	}
+}
+
+sub BotLife_Quit {
+	my ($MsgNick, $MsgIdent, $MsgHost, $MsgTarget, $Msg) = @_;
+	if(IsAdmin($MsgNick)){
+		if($Msg =~ /^\!quit/){
+			print $Core::IRCHandler "QUIT\n";
+			exit(0);
+		}
+	}
+}
+
+1;

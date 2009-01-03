@@ -73,4 +73,13 @@ sub RegisterKey {
 	print("    - Keyword $Keyword registered.\n") if($Core::Debug);
 }
 
+sub IsAdmin {
+	my($Nickname) = shift;
+	if(grep { $_ eq $Nickname } @Core::Admins) {
+		1;
+	} else {
+		0;
+	}
+}
+ 
 1;
