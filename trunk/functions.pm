@@ -56,8 +56,7 @@ sub Config {
 
 # - SendMsg(type, message, <recipient>) - Send a message. 
 # The first parameter is the type of message (query or notice), 
-# the second is the message. If the type is "query", there's a third parameter
-# to specify, the recipient.
+# the second is the message and the third the recipient.
 sub SendMsg {
 	my $MsgType = shift();
 	my ($Msg, $To) = @_;
