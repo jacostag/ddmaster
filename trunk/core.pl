@@ -1,9 +1,8 @@
 ############################################################
-# 	- DDBot v0.1a -
+# 	- DDMaster Core v0.1a -
 # Written by:
 # 	EverlastingFire 
 # 		(everlastingfire@autistici.org)
-# core.pl
 ############################################################
 
 use strict;
@@ -12,6 +11,10 @@ require "functions.pm";
 
 # Enable debugging - 1 is enabled, 0 is disabled
 $Core::Debug = 0;
+
+# Administration password and array
+$Core::AdminPass = "test";
+@Core::Admins;
 
 # Local vars
 my $ModList = "modlist";
