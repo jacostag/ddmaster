@@ -8,9 +8,10 @@
 use strict;
 use IO::Socket;
 require "functions.pm";
+require "lang/it.pm"; # TODO: Language selection in config file
 
 # Enable debugging - 1 is enabled, 0 is disabled
-$Core::Debug = 0;
+$Core::Debug = 1;
 
 # Administration password and array
 $Core::AdminPass = "test";
@@ -23,36 +24,36 @@ my $ErrLog = "error.log";
 my @Errors;
 
 # Bot start
-print("     - DDMaster IRC Bot -\n");
-print("Debug mode: ", ($Core::Debug) ? "yes\n" : "no\n");
+print "     - DDMaster IRC Bot -\n";
+print "Debug mode: ", ($Core::Debug) ? "yes\n" : "no\n";
 # Module loader
-print("[*] Loading modules...\n");
-open(ModFile, "<$ModList") or warn "  [*] Warning: $ModList not found!\n";
+print "[*] Loading modules...\n";
+open ModFile, "<$ModList" or warn "  [*] Warning: $ModList not found!\n";
 while(my $ModName = <ModFile>){
-	chomp($ModName);
-	print("  - \"$ModName\"... ");
+	chomp $ModName;
+	print "  - \"$ModName\"... ";
 	if(!(-e "modules/$ModName")){
-		print("Not found.\n");
+		print "Not found.\n";
 	} else {
 		eval{ require "modules/$ModName" };
 		if($@){ # Error handling - if a module can't be loaded skip it and push the error in @Errors
-			print("Errors. Skipping...\n");
-			push(@Errors, "- Module: $ModName -\n---------------------------\n");
-			push(@Errors, $@);
-			push(@Errors, "---------------------------\n");
+			print "Errors. Skipping...\n";
+			push @Errors, "- Module: $ModName -\n---------------------------\n";
+			push @Errors, $@;
+			push @Errors, "---------------------------\n";
 		} else {
-			print("Loaded.\n");
+			print "Loaded.\n";
 		}
 	}
 }
-close(ModFile);
+close ModFile;
 
 # Write the error log
-open(ErrFile, ">$ErrLog") or warn "  [*] Warning: $ErrLog not found!\n" ;
+open ErrFile, ">$ErrLog" or warn "  [*] Warning: $ErrLog not found!\n" ;
 foreach my $ErrLine (@Errors){
 	print ErrFile $ErrLine . "\n";
 }
-close(ErrFile);
+close ErrFile;
 
 print("[*] Loading complete.\n");
 
