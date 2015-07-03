@@ -1,0 +1,1 @@
+DDMaster is a Perl IRC Bot. It allows playing the popular role game Dungeons and Dragons. It's modular and customizable, and works in Windows and Linux.
